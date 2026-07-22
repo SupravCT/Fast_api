@@ -1,0 +1,28 @@
+from sqlmodel import SQLModel,Field,Column
+from datetime import datetime
+from uuid import UUID,uuid4
+from sqlalchemy.dialects import postgresql
+import datetime
+
+class User(SQLModel,table=True):
+
+    __tablename__="users"
+    uid:UUID=Field(
+        sa_columns=Column(
+            postgresql.UUID,
+            primary_key=True,
+            nullable=False,
+            default=uuid4
+
+        )
+    )
+    usernmame:str
+    email:str
+    first_name:str
+    last_name:str
+    is_verified:bool=Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
+
+    def __repr__(self):
+        return f"<User{self.username}>"
