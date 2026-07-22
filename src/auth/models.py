@@ -2,13 +2,13 @@ from sqlmodel import SQLModel,Field,Column
 from datetime import datetime
 from uuid import UUID,uuid4
 from sqlalchemy.dialects import postgresql
-import datetime
+from datetime import datetime 
 
 class User(SQLModel,table=True):
 
     __tablename__="users"
     uid:UUID=Field(
-        sa_columns=Column(
+        sa_column=Column(
             postgresql.UUID,
             primary_key=True,
             nullable=False,
@@ -16,7 +16,7 @@ class User(SQLModel,table=True):
 
         )
     )
-    usernmame:str
+    username:str
     email:str
     first_name:str
     last_name:str
