@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 
 password_context=CryptContext(
-    schemas=['bcrypt']
+    schemes=['bcrypt']
 
 )
 
