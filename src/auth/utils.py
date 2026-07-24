@@ -2,6 +2,7 @@ from passlib.context import CryptContext
 from datetime import timedelta,datetime
 import jwt
 from src.config import settings
+import logging
 
 password_context=CryptContext(
     schemes=['bcrypt']
@@ -31,3 +32,17 @@ def create_access_token(user_data,expiry:timedelta=timedelta(hours=1)):
     )
 
     return token
+
+
+def decode_toke(token):
+    try:
+        token_data=jwt.decode(
+            jwt=token,
+            key=settings.JWT_SECRET_KEY,
+            algorithms=settings.JWT_ALGORITHM
+        )
+
+        return token_data
+    except jwt.PyJWTError as e:
+        logging.exception(e)
+        return None
