@@ -34,7 +34,7 @@ def create_access_token(user_data,expiry:timedelta=timedelta(hours=1)):
     return token
 
 
-def decode_toke(token):
+def decode_token(token):
     try:
         token_data=jwt.decode(
             jwt=token,
