@@ -7,7 +7,8 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from .utils import create_access_token,verify_passsword
 from src.db.redis import add_jti_to_blocklist
-from .dependencies import AccessTokenBearer
+from .dependencies import AccessTokenBearer,get_current_user
+
 
 auth_router=APIRouter()
 user_service=UserService()
@@ -56,6 +57,10 @@ async def login_users(login_data:UserLoginModel,session:AsyncSession=Depends(get
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN
     )
+
+@auth_router.get('/me')
+async def get_me(user=Depends(get_current_user)):
+    return user
 
 @auth_router.post('/logout')
 async def revoke_token(token_details: dict = Depends(access_token_bearer)):
