@@ -6,9 +6,12 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from .utils import create_access_token,verify_passsword
+from src.db.redis import add_jti_to_blocklist
+from .dependencies import AccessTokenBearer
 
 auth_router=APIRouter()
 user_service=UserService()
+access_token_bearer = AccessTokenBearer() 
 
 @auth_router.post('/signup',response_model=UserModel)
 async def create_user_account(user_data:UserCreateModel,session:AsyncSession=Depends(get_session)):
@@ -52,4 +55,15 @@ async def login_users(login_data:UserLoginModel,session:AsyncSession=Depends(get
 
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN
+    )
+
+@auth_router.post('/logout')
+async def revoke_token(token_details: dict = Depends(access_token_bearer)):
+    jti = token_details['jti']
+
+    await add_jti_to_blocklist(jti)
+
+    return JSONResponse(
+        content={"message": "Logged out successfully"},
+        status_code=status.HTTP_200_OK
     )

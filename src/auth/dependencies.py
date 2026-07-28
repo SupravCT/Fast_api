@@ -1,5 +1,5 @@
 from fastapi.security import HTTPBearer
-from fastapi import Request
+from fastapi import Request,Depends
 from .utils import decode_token
 from fastapi.exceptions import HTTPException
 from src.db.redis import token_in_blocklist
@@ -25,3 +25,6 @@ class AccessTokenBearer(HTTPBearer):
              raise HTTPException(status_code=401, detail="Invalid or expired token")
             
         return token_data
+
+def get_current_user[token_details]():
+    pass

@@ -30,7 +30,7 @@ def create_access_token(user_data,expiry:timedelta=timedelta(hours=1)):
     token=jwt.encode(
         payload=payloadd,
         key=settings.JWT_SECRET_KEY,
-        algorithm=[settings.JWT_ALGORITHM]
+        algorithm=settings.JWT_ALGORITHM
     )
 
     return token
@@ -41,7 +41,7 @@ def decode_token(token):
         token_data=jwt.decode(
             jwt=token,
             key=settings.JWT_SECRET_KEY,
-            algorithms=settings.JWT_ALGORITHM
+            algorithms=[settings.JWT_ALGORITHM]
         )
 
         return token_data
