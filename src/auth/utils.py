@@ -3,6 +3,7 @@ from datetime import timedelta,datetime
 import jwt
 from src.config import settings
 import logging
+import uuid
 
 password_context=CryptContext(
     schemes=['bcrypt']
@@ -24,11 +25,12 @@ def create_access_token(user_data,expiry:timedelta=timedelta(hours=1)):
     payloadd={}
     payloadd['user']=user_data
     payloadd['exp']=datetime.now()+expiry
+    payloadd['jti'] = str(uuid.uuid4())
 
     token=jwt.encode(
         payload=payloadd,
         key=settings.JWT_SECRET_KEY,
-        algorithm=settings.JWT_ALGORITHM
+        algorithm=[settings.JWT_ALGORITHM]
     )
 
     return token

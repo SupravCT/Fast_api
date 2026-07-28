@@ -5,7 +5,7 @@ from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from .utils import create_access_token,decode_token,verify_passsword
+from .utils import create_access_token,verify_passsword
 
 auth_router=APIRouter()
 user_service=UserService()
