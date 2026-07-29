@@ -30,6 +30,8 @@ class UserService:
         )
         new_user.password_hash=generate_password_hash(user_data_dict['password'])
 
+        new_user.role="user"
+
         session.add(new_user)
 
         await session.commit()

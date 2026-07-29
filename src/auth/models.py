@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID,uuid4
 from sqlalchemy.dialects import postgresql
 from datetime import datetime 
+import sqlalchemy as sa
 
 class User(SQLModel,table=True):
 
@@ -20,7 +21,14 @@ class User(SQLModel,table=True):
     email:str
     first_name:str
     last_name:str
-    role:str=Field(default="user")
+    #role:str=Field(default="user")
+
+    role: str = Field(
+    sa_column=Column(
+        sa.String(),
+        nullable=False,
+        server_default="user"  
+    ))
     is_verified:bool=Field(default=False)
 
     password_hash:str=Field(exclude=True)

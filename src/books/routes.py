@@ -9,10 +9,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from src.books.service import BookService
 from src.auth.dependencies import AccessTokenBearer
 from uuid import UUID
+from src.auth.dependencies import RoleChecker
+
 
 book_router=APIRouter()
 Book_service=BookService()
 access_token_bearer=AccessTokenBearer()
+role_checker=RoleChecker(['admin','user'])
 
 @book_router.get("/",response_model=list[Book])
 async def get_books(session:AsyncSession=Depends(get_session),
@@ -52,7 +55,8 @@ async def update_book(book_uid:UUID,book_update:BookUpdateModel,session:AsyncSes
 
 @book_router.delete("/{book_uid}")
 async def delete_book(book_uid:UUID,session:AsyncSession=Depends(get_session),
-                      user_details=Depends(access_token_bearer)):
+                      user_details=Depends(access_token_bearer),
+                      _:bool=Depends(role_checker)):
         book_to_delete=await Book_service.delete_book(book_uid,session)
         if book_to_delete:
             return book_to_delete
