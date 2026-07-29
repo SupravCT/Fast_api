@@ -20,6 +20,7 @@ class User(SQLModel,table=True):
     email:str
     first_name:str
     last_name:str
+    role:str=Field(default="user")
     is_verified:bool=Field(default=False)
 
     password_hash:str=Field(exclude=True)

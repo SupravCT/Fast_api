@@ -16,7 +16,7 @@ version='v1'
 
 
 app=FastAPI(
-    lifespan=life_span
+    #lifespan=life_span
 )
 
 app.include_router(book_router,prefix='/api/{version}/books')
