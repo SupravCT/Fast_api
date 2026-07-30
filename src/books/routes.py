@@ -27,8 +27,10 @@ async def get_books(session:AsyncSession=Depends(get_session),
 async def create_book(book_data:BookCreateModel,
                       session:AsyncSession=Depends(get_session),
                       user_details=Depends(access_token_bearer)):
-
-    new_book=await Book_service.create_book(book_data,session)
+    user_uid=user_details['user']['user_uid']
+    new_book=await Book_service.create_book(book_data,
+                                            session,
+                                            user_uid)
 
     return new_book
 
