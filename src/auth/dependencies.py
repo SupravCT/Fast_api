@@ -6,6 +6,7 @@ from src.db.redis import token_in_blocklist
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from .service import UserService
+
 from .models import User
 from src.errors import (InvaildToken,
                         RevokedToken,
@@ -29,10 +30,12 @@ class AccessTokenBearer(HTTPBearer):
         token_data =decode_token(token)
 
         if token_data is None:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
+            #raise HTTPException(status_code=401, detail="Invalid or expired token")
+            raise InvaildToken()
 
         if await token_in_blocklist(token_data['jti']):
-             raise HTTPException(status_code=401, detail="Invalid or expired token")
+             #raise HTTPException(status_code=401, detail="Invalid or expired token")
+             raise RevokedToken()
             
         return token_data
 
@@ -59,10 +62,11 @@ class RoleChecker:
         if current_user.role in self.allowed_roles:
             return True
 
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to perform this action"
-        )
+        #raise HTTPException(
+        #    status_code=status.HTTP_403_FORBIDDEN,
+        #    detail="You do not have permission to perform this action"
+        #)
+        raise NoPermission()
 
 #admin_role_checker = RoleChecker(["admin"])
 #user_or_admin_checker = RoleChecker(["admin", "user"])

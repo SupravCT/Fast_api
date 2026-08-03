@@ -27,7 +27,7 @@ app=FastAPI(
 
 app.add_exception_handler(
     InvaildToken,
-    create_exception_handler(401,"Invalid or expired token")
+    create_exception_handler(401,"Invalid or expiredddd token")
 )
 app.add_exception_handler(
     RevokedToken,
@@ -38,6 +38,6 @@ app.add_exception_handler(
     create_exception_handler(403,"You do not have permission to perform this action")
 )
 
-app.include_router(book_router,prefix='/api/{version}/books')
+app.include_router(book_router,prefix=f'/api/{version}/books')
 
-app.include_router(auth_router,prefix='/api/{version}/auth')
+app.include_router(auth_router,prefix=f'/api/{version}/auth')

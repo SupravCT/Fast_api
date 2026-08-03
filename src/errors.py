@@ -9,7 +9,7 @@ class BookException(Exception):
 class InvaildToken(BookException):
     pass
 
-class RevokedToken(BaseException):
+class RevokedToken(BookException):
     pass
 
 class NoPermission(BookException):
