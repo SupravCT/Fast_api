@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     MAIL_FROM_NAME : str
     MAIL_STARTTLS : bool = True
     MAIL_SSL_TLS : bool = False
-    USE_CREDENTIALS : bool = True,
+    USE_CREDENTIALS : bool = True
     VALIDATE_CERTS : bool = True
 
     model_config=SettingsConfigDict(

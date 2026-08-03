@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from .utils import create_access_token,verify_passsword
 from src.db.redis import add_jti_to_blocklist
 from .dependencies import AccessTokenBearer,get_current_user,RoleChecker
-
+from src.mail import create_message,mail
 
 auth_router=APIRouter()
 user_service=UserService()
@@ -75,3 +75,14 @@ async def revoke_token(token_details: dict = Depends(access_token_bearer)):
         content={"message": "Logged out successfully"},
         status_code=status.HTTP_200_OK
     )
+
+@auth_router.post('/send-mail')
+async def send_mail():
+    html="<h1>Hello from FastAPI</h1>"
+    message = create_message(
+        recipients=["supravchand2@gmail.com"],
+        subject="Test Email",
+        body=html
+    )
+    await mail.send_message(message)
+    return {"message": "Email sent"}
