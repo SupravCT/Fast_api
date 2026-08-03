@@ -57,3 +57,15 @@ def create_url_safe_token(data):
     )
     token=serializer.dumps(data)
     return token
+
+def decode_url_safe_token(token):
+    try:
+        seralizer=URLSafeTimedSerializer(
+            secret_key=settings.JWT_SECRET_KEY,
+            salt=settings.JWT_ALGORITHM
+        )
+        token_data=seralizer.loads(token)
+        return token_data
+    except Exception as e:
+        logging.exception(e)
+        return None

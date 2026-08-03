@@ -5,10 +5,12 @@ from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from .utils import create_access_token,verify_passsword
+from .utils import create_access_token,verify_passsword,create_url_safe_token,decode_url_safe_token
 from src.db.redis import add_jti_to_blocklist
 from .dependencies import AccessTokenBearer,get_current_user,RoleChecker
 from src.mail import create_message,mail
+from src.config import settings
+
 
 auth_router=APIRouter()
 user_service=UserService()
@@ -26,7 +28,28 @@ async def create_user_account(user_data:UserCreateModel,session:AsyncSession=Dep
 
     new_user=await user_service.create_user(user_data,session)
 
-    return new_user
+    token=create_url_safe_token({"email": email})
+
+    Link=f"http://{settings.DOMAIN}/api/v1/auth/verify{token}"
+
+    html_message=f'''
+    <h1>Welcome to our platform</h1>
+    <h2>verify your email address</h2>
+    <p>Click the link below to verify your email address:</p>
+    <a href="{Link}">to Verify Email</a>
+    '''
+    message=create_message(
+        recipients=[email],
+        subject="Verify your email address",
+        body=html_message
+    )
+
+    await mail.send_message(message)
+
+    return {
+        "message":"User created successfully",
+        "user":new_user
+    }
 
 @auth_router.post('/login')
 
