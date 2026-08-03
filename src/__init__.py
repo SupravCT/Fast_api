@@ -9,6 +9,7 @@ from .errors import (
     RevokedToken,
     NoPermission
 )
+from .middleware import register_middleware
 
 
 @asynccontextmanager
@@ -37,6 +38,8 @@ app.add_exception_handler(
     NoPermission,
     create_exception_handler(403,"You do not have permission to perform this action")
 )
+
+register_middleware(app)
 
 app.include_router(book_router,prefix=f'/api/{version}/books')
 
