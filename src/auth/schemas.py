@@ -26,3 +26,6 @@ class UserModel(BaseModel):
 class UserLoginModel(BaseModel):
       email:str
       password:str
+
+class PasswordResetRequestModel(BaseModel):
+    email:str

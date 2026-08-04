@@ -1,5 +1,5 @@
 from fastapi import  APIRouter,Depends,status
-from .schemas import UserCreateModel,UserModel,UserLoginModel
+from .schemas import UserCreateModel,UserModel,PasswordResetRequestModel,UserLoginModel
 from.service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -131,3 +131,31 @@ async def send_mail():
     )
     await mail.send_message(message)
     return {"message": "Email sent"}
+
+
+@auth_router.post('/password_reset_request')
+async def password_reset(email_data:PasswordResetRequestModel):
+    email=email_data.email
+
+    token=create_url_safe_token({"email":email})
+
+    link=f"http://{settings.DOMAIN}/api/v1/auth/password_reset/{token}"
+
+    html_message=f'''
+    <h1>Password Reset Request</h1>
+    <p>click <a href="{link}">here</a> to reset your password</p>
+    '''
+
+    message=create_message(
+        recipients=[email],
+        subject="Password Reset Request",
+        body=html_message
+
+    )
+
+    await mail.send_message(message)
+
+    return {
+        "message":"Password reset email sent successfully"
+        
+    }
