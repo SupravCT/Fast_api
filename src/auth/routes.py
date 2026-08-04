@@ -12,6 +12,7 @@ from src.mail import create_message,mail
 from src.config import settings
 
 
+
 auth_router=APIRouter()
 user_service=UserService()
 access_token_bearer = AccessTokenBearer()
@@ -50,6 +51,27 @@ async def create_user_account(user_data:UserCreateModel,session:AsyncSession=Dep
         "message":"User created successfully",
         "user":new_user
     }
+
+
+@auth_router.get('/verify/{token}')
+async def verify_usr_acc(token,session:AsyncSession=Depends(get_session)):
+    token_data=decode_url_safe_token(token)
+
+    user_email=token_data.get('email')
+
+    if user_email is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Invalid token")
+    else:
+        user=await user_service.get_user_by_email(user_email,
+                                            session=session)
+
+
+        await user_service.update_user(user,{'is_verified':True},session)
+
+        return JSONResponse(content=
+        {"message": "Email verified successfully"})
+    
+
 
 @auth_router.post('/login')
 
