@@ -1,5 +1,5 @@
 from fastapi import  APIRouter,Depends,status
-from .schemas import UserCreateModel,UserModel,PasswordResetRequestModel,UserLoginModel
+from .schemas import UserCreateModel,PasswordResetConfirmationModel,UserModel,PasswordResetRequestModel,UserLoginModel
 from.service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -157,5 +157,34 @@ async def password_reset(email_data:PasswordResetRequestModel):
 
     return {
         "message":"Password reset email sent successfully"
-        
+
     }
+
+
+
+@auth_router.get('/password_reset/{token}')
+async def change_password(token,
+                          password:PasswordResetConfirmationModel,
+                          session:AsyncSession=Depends(get_session)):
+
+    if password.new_password != password.confirm_new_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Passwords do not match")
+
+    token_data=decode_url_safe_token(token)
+
+    user_email=token_data.get('email')
+
+    if user_email is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Invalid token")
+    else:
+        user=await user_service.get_user_by_email(user_email,
+                                            session=session)
+
+
+        await user_service.update_user(user,{'is_verified':True},session)
+
+        return JSONResponse(content=
+        {"message": "Email verified successfully"})
+
+
+    

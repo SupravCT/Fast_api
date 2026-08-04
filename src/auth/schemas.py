@@ -29,3 +29,7 @@ class UserLoginModel(BaseModel):
 
 class PasswordResetRequestModel(BaseModel):
     email:str
+
+class PasswordResetConfirmationModel(BaseModel):
+    new_password:str
+    confirm_new_password:str
