@@ -1,3 +1,5 @@
+from operator import ge
+
 from fastapi import  APIRouter,Depends,status
 from .schemas import UserCreateModel,PasswordResetConfirmationModel,UserModel,PasswordResetRequestModel,UserLoginModel
 from.service import UserService
@@ -5,7 +7,7 @@ from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from .utils import create_access_token,verify_passsword,create_url_safe_token,decode_url_safe_token
+from .utils import create_access_token,generate_password_hash,verify_passsword,create_url_safe_token,decode_url_safe_token
 from src.db.redis import add_jti_to_blocklist
 from .dependencies import AccessTokenBearer,get_current_user,RoleChecker
 from src.mail import create_message,mail
@@ -167,7 +169,10 @@ async def change_password(token,
                           password:PasswordResetConfirmationModel,
                           session:AsyncSession=Depends(get_session)):
 
-    if password.new_password != password.confirm_new_password:
+
+    new_password=password.new_password
+    confirm_new_password=password.confirm_new_password
+    if new_password != confirm_new_password:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Passwords do not match")
 
     token_data=decode_url_safe_token(token)
@@ -179,12 +184,12 @@ async def change_password(token,
     else:
         user=await user_service.get_user_by_email(user_email,
                                             session=session)
-
-
-        await user_service.update_user(user,{'is_verified':True},session)
+    
+        pass_hash=generate_password_hash(new_password)
+        await user_service.update_user(user,{'password':pass_hash},session)
 
         return JSONResponse(content=
-        {"message": "Email verified successfully"})
+        {"message": "Password updated successfully"})
 
 
     
