@@ -164,7 +164,7 @@ async def password_reset(email_data:PasswordResetRequestModel):
 
 
 
-@auth_router.get('/password_reset/{token}')
+@auth_router.post('/password_reset/{token}')
 async def change_password(token,
                           password:PasswordResetConfirmationModel,
                           session:AsyncSession=Depends(get_session)):
@@ -186,7 +186,7 @@ async def change_password(token,
                                             session=session)
     
         pass_hash=generate_password_hash(new_password)
-        await user_service.update_user(user,{'password':pass_hash},session)
+        await user_service.update_user(user,{'password_hash':pass_hash},session)
 
         return JSONResponse(content=
         {"message": "Password updated successfully"})
